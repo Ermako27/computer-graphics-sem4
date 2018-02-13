@@ -1,3 +1,7 @@
+
+
+
+
 def file_test(file_name):
     try:
         f = open(file_name, 'r')
