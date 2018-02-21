@@ -120,7 +120,7 @@ def print_solution(dot1, dot2, dot3, frame, canvas):
     coordinates = tb_create(df)
     root = Tk()
     root.title('Таблица ответов')
-    root.geometry('700x500')
+    root.geometry('1000x400')
     tb = Table(root, ('№', 'X', 'Y', 'RADIUS'), coordinates)
     tb.pack(expand=YES, fill=BOTH)
 
