@@ -56,34 +56,16 @@ def show_dots_window(frame):
 
 # добавление новой точки в dataframe
 def insert_dot(frame, x, y, insert_amount):
-
-    for i in range(insert_amount):
-
-        insert_x = float(x[i].get())
-        insert_y = float(y[i].get())
-        frame.loc[len(frame)] = [insert_x, insert_y]
-
-"""
-
-       if float(x[i].get()) // 10 == 0:
-            insert_x = int(x[i].get())
-        else:
+    try:
+        for i in range(insert_amount):
             insert_x = float(x[i].get())
-
-        print(y[i].get())
-        if float(y[i].get()) // 10 == 0:
-            print('!')
-            insert_y = int(y[i].get())
-        else:
-            print('%')
             insert_y = float(y[i].get())
-"""
-
-
+            frame.loc[len(frame)] = [insert_x, insert_y]
+    except (IndexError, ValueError):
+        error_message('Некорректный ввод')
 
 
 def insert_dot_window(frame, insert_amount):
-
     root = Tk()
     root.title('Добавление точек')
     root.geometry('250x'+str(insert_amount*100))
@@ -108,10 +90,21 @@ def insert_dot_window(frame, insert_amount):
 
 # удаление точки из dataframe
 def delete_dot(frame, ind, delete_amount):
-    tmp = frame.loc[frame.index == 3]
-    for i in range(delete_amount):
-        frame.loc[frame.index == int(ind[i].get())] = tmp
+    try:
+        flag = 0
+        for i in range(len(ind)):
+            if int(ind[i].get()) < 0 or int(ind[i].get()) >= len(frame):  # проверка ввода отсутствующего индекса
+                flag = 1
 
+        if flag == 0:  # если таких нет то
+            tmp = frame.loc[frame.index == 3]
+            for i in range(delete_amount):
+              frame.loc[frame.index == int(ind[i].get())] = tmp
+        else:
+            error_message('Отсутствующий индекс точки')
+
+    except (IndexError, ValueError):
+        error_message('Некорректный ввод')
 
 def delete_dot_window(frame, delete_amount):
     root = Tk()
@@ -132,10 +125,16 @@ def delete_dot_window(frame, delete_amount):
 
 # изменение координато точки
 def change_dot(frame, index, x, y):
-    x = float(x)
-    y = float(y)
-    frame.loc[index, 'x'] = x
-    frame.loc[index, 'y'] = y
+    try:
+        if index < 0 or index >= len(frame):
+            error_message('Отсутствующий индекс точки')
+        else:
+            x = float(x)
+            y = float(y)
+            frame.loc[index, 'x'] = x
+            frame.loc[index, 'y'] = y
+    except (IndexError, ValueError):
+        error_message('Некорректный ввод')
 
 
 def change_dot_window(frame):
@@ -146,7 +145,7 @@ def change_dot_window(frame):
     change_label = Label(root, text='Введите номер изменяемой точки и её новые координаты', font=('Helvectica', '16'))
     change_label.place(x=0, y=10)
 
-    index_label = Label(root, text='№ точки')
+    index_label = Label(root, text='Индекс точки')
     index_label.place(x=0, y=50)
 
     index_entry = Entry(root)
