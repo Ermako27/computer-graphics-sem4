@@ -1,7 +1,24 @@
 from tkinter import *
-from interface_func import Table
+from interface_func import Table, error_message
 import pandas as pd
 import math
+
+
+def len_of_line(dot1, dot2):  # нахождение длины отрезка
+    return math.sqrt(math.pow(dot2[0] - dot1[0], 2) + math.pow(dot2[1] - dot1[1], 2))
+
+
+def triangle_check(dot1, dot2, dot3):  # проверка на вырожденный треугольник
+    if len_of_line(dot1, dot2) >= (len_of_line(dot2, dot3) + len_of_line(dot1, dot3)):
+        return -1
+
+    elif len_of_line(dot2, dot3) >= (len_of_line(dot1, dot2) + len_of_line(dot1, dot3)):
+        return -1
+
+    elif len_of_line(dot1, dot3) >= (len_of_line(dot2, dot3) + len_of_line(dot1, dot2)):
+        return -1
+    else:
+        return 0
 
 
 def tb_create(frame):
@@ -11,7 +28,7 @@ def tb_create(frame):
     return coordinates
 
 
-def x_find(dot1, dot2, y):
+def x_find(dot1, dot2, y): # нахождение координат точки
     return (((y - dot1[1]) * (dot2[0] - dot1[0])) / (dot2[1] - dot1[1])) + dot1[0]
 
 
@@ -70,64 +87,78 @@ def create_triangle(dot1, dot2, dot3, canvas, triger=0):  # построение
     circle(dot3[0], dot3[1], 3, canvas, 'green', t='del')
 
 
-def print_all_figures(dot1, dot2, dot3, frame, canvas):  # напечатать все точки из датафрэйм
-    canvas.delete('del')
-    canvas.delete('all_del')
-    i = 0
-    create_triangle(dot1, dot2, dot3, canvas)
-    for row in frame.dropna().itertuples():
-        circle(int(row[1]), int(row[2]), 3, canvas, t='all_del')
-        text = str(i) + '.' + str((row[1], row[2]))
-        canvas.create_text(500 + row[1]*25 + 10, 500 - row[2]*25 + 10, text=text, fill='blue', font=('Helvectica', '12'), tag='all_del')
-        i += 1
+def print_all_figures(dot1, dot2, dot3, frame, canvas):  # отрисавка всех фигур
 
-    comb = dots_combinations(frame)
+    d1 = [int(i) for i in dot1.split()]
+    d2 = [int(i) for i in dot2.split()]
+    d3 = [int(i) for i in dot3.split()]
 
-    for elem in comb:  # отрисовка всевозможных окружностей
-        center = center_coordinates_find(elem[0], elem[1], elem[2])  # находим центр окружности
-        radius = len_of_line(elem[0], center)  # находим радиус
-        circle(center[0], center[1], radius*25, canvas, None, t='del')
+    if triangle_check(d1, d2, d3) == 0:
+        canvas.delete('del')
+        canvas.delete('all_del')
+        i = 0
+        create_triangle(dot1, dot2, dot3, canvas)
+        for row in frame.dropna().itertuples():
+            circle(row[1], row[2], 3, canvas, t='all_del')
+            text = str(i) + '.' + str((row[1], row[2]))
+            canvas.create_text(500 + row[1]*25 + 10, 500 - row[2]*25 + 10, text=text, fill='blue', font=('Helvectica', '12'), tag='all_del')
+            i += 1
+
+        comb = dots_combinations(frame)
+
+        for elem in comb:  # отрисовка всевозможных окружностей
+            center = center_coordinates_find(elem[0], elem[1], elem[2])  # находим центр окружности
+            if center != -1:
+                radius = len_of_line(elem[0], center)  # находим радиус
+                circle(center[0], center[1], radius*25, canvas, None, t='del')
+
+    else:
+        error_message('Вырожденный треугольник')
 
 
 def insert_answer(frame, coordinates):
     frame.loc[len(frame)] = coordinates
 
 
-def print_solution(dot1, dot2, dot3, frame, canvas):
-    i = 0
-    df = pd.DataFrame(columns=['x', 'y', 'радиус'])
-    canvas.delete('del')
-    create_triangle(dot1, dot2, dot3, canvas, 1)
+def print_solution(dot1, dot2, dot3, frame, canvas):  # отрисовка решения
 
+    d1 = [int(i) for i in dot1.split()]
+    d2 = [int(i) for i in dot2.split()]
+    d3 = [int(i) for i in dot3.split()]
 
-    dot1 = [int(i) for i in dot1.split()]
-    dot2 = [int(i) for i in dot2.split()]
-    dot3 = [int(i) for i in dot3.split()]
-    comb = dots_combinations(frame.dropna())
+    if triangle_check(d1, d2, d3) == 0:
+        i = 0
+        df = pd.DataFrame(columns=['x', 'y', 'радиус'])
+        canvas.delete('del')
+        create_triangle(dot1, dot2, dot3, canvas, 1)
 
-    for elem in comb:
-        center = center_coordinates_find(elem[0], elem[1], elem[2])  # находим центр окружности
-        if belonging(dot1, dot2, dot3, center):
-            radius = len_of_line(elem[0], center)  # находим радиус
-            circle(center[0], center[1], radius*25, canvas, None, 'red', 'del')
-            circle(center[0], center[1], 3, canvas, 'red', 'red', 'del')
-            text = str(i) + '.' + str(center)
-            canvas.create_text(500 + center[0] * 25 + 10, 500 - center[1] * 25 + 10, text=text,
-                               fill='red', font=('Helvectica', '12'), tag='del')
-            insert_answer(df, (center[0], center[1], round(radius, 2)))
-            i += 1
+        dot1 = [int(i) for i in dot1.split()]
+        dot2 = [int(i) for i in dot2.split()]
+        dot3 = [int(i) for i in dot3.split()]
+        comb = dots_combinations(frame.dropna())
 
-    coordinates = tb_create(df)
-    root = Tk()
-    root.title('Таблица ответов')
-    root.geometry('1000x400')
-    tb = Table(root, ('№', 'X', 'Y', 'RADIUS'), coordinates)
-    tb.pack(expand=YES, fill=BOTH)
+        for elem in comb:
+            center = center_coordinates_find(elem[0], elem[1], elem[2])  # находим центр
+            if center != -1:
+                if belonging(dot1, dot2, dot3, center):
+                    radius = len_of_line(elem[0], center)  # находим радиус
+                    circle(center[0], center[1], radius*25, canvas, None, 'red', 'del')
+                    circle(center[0], center[1], 3, canvas, 'red', 'red', 'del')
+                    text = str(i) + '.' + str(center)
+                    canvas.create_text(500 + center[0] * 25 + 10, 500 - center[1] * 25 + 10, text=text,
+                                   fill='red', font=('Helvectica', '12'), tag='del')
+                    insert_answer(df, (center[0], center[1], round(radius, 2)))
+                    i += 1
 
-
-
-    print(df)
-
+        coordinates = tb_create(df)
+        root = Tk()
+        root.title('Таблица ответов')
+        root.geometry('1000x400')
+        tb = Table(root, ('№', 'X', 'Y', 'RADIUS'), coordinates)
+        tb.pack(expand=YES, fill=BOTH)
+        print(df)
+    else:
+        error_message('Вырожденный треугольник')
 
 
 def dots_combinations(frame):
@@ -145,11 +176,11 @@ def dots_combinations(frame):
     return x
 
 
-def len_of_line(dot1, dot2):  # нахождение длины отрезка
-    return math.sqrt(math.pow(dot2[0] - dot1[0], 2) + math.pow(dot2[1] - dot1[1], 2))
-
-
 def center_coordinates_find(dot1, dot2, dot3):
+
+    if dot1[0] == dot2[0] == dot3[0] or dot1[1] == dot2[1] == dot3[1]:
+        return -1
+
     cx = 0
     cy = 0
     a = dot2[0] - dot1[0]
@@ -185,7 +216,8 @@ def belonging(dot1, dot2, dot3, aim):
 
 
 def main():
-    read()
+    print(triangle_check(('0', '-7'), ('0', '-5'), ('0', '-1')))
+    print(triangle_check(('0', '5'), ('-6', '-3'), ('6', '-3')))
 
 
 if __name__ == '__main__':

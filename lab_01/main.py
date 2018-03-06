@@ -83,22 +83,33 @@ solution_button.place(x=250, y=100)
 # вывод таблицы
 table_button = Button(root, text='Показать таблицу координат')
 table_button.bind('<Button-1>', lambda event: show_dots_window(df_text))
-table_button.place(x=10, y=150)
+table_button.place(x=10, y=150,width=270)
 
 # добавление новой точки
-insert_button = Button(root, text='Добавить новую точку')
-insert_button.bind('<Button-1>', lambda event: insert_dot_window(df_text))
-insert_button.place(x=10, y=180)
+insert_amount = Entry(root)
+insert_amount.place(x=290, y=180)
+insert_button = Button(root, text='Добавить точки (введите их количесво)', command=lambda: insert_dot_window(df_text, int(insert_amount.get())))
+insert_button.place(x=10, y=180, width=270)
 
 # удаление точки
+delete_amount = Entry(root)
+delete_amount.place(x=290, y=210)
+delete_button = Button(root, text='Удалить точки (введите их количесво)', command=lambda: delete_dot_window(df_text, int(delete_amount.get())))
+delete_button.place(x=10, y=210, width=270)
+
+
+
+
+"""
 delete_button = Button(root, text='Удалить точку')
 delete_button.bind('<Button-1>', lambda event: delete_dot_window(df_text))
-delete_button.place(x=10, y=210)
+delete_button.place(x=10, y=210, width=270)
+"""
 
 # изменение координат точки
 change_button = Button(root, text='Изменить точку')
 change_button.bind('<Button-1>', lambda event: change_dot_window(df_text))
-change_button.place(x=10, y=240)
+change_button.place(x=10, y=240, width=270)
 
 canvas.pack(side='right')
 root.mainloop()

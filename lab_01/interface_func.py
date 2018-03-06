@@ -1,16 +1,18 @@
 from tkinter import *
+from tkinter import messagebox
 import tkinter.ttk as ttk
 # from logic_func import file_read
 import pandas as pd
 
 
-df = pd.read_csv('dots.csv', sep=',')
+def error_message(message):
+    messagebox.showerror("Error", message)
 
 
 def table_create(frame):
     coordinates = []
     for row in frame.dropna().itertuples():
-        coordinates.append((row[0], row[1], row[2]))
+        coordinates.append((row[0], float(row[1]), float(row[2])))
     return coordinates
 
 
@@ -53,53 +55,85 @@ def show_dots_window(frame):
 
 
 # добавление новой точки в dataframe
-def insert_dot(frame, coordinates):
-    frame.loc[len(frame)] = [int(i) for i in coordinates.split()]
+def insert_dot(frame, x, y, insert_amount):
+
+    for i in range(insert_amount):
+
+        insert_x = float(x[i].get())
+        insert_y = float(y[i].get())
+        frame.loc[len(frame)] = [insert_x, insert_y]
+
+"""
+
+       if float(x[i].get()) // 10 == 0:
+            insert_x = int(x[i].get())
+        else:
+            insert_x = float(x[i].get())
+
+        print(y[i].get())
+        if float(y[i].get()) // 10 == 0:
+            print('!')
+            insert_y = int(y[i].get())
+        else:
+            print('%')
+            insert_y = float(y[i].get())
+"""
 
 
-def insert_dot_window(frame):
+
+
+def insert_dot_window(frame, insert_amount):
+
     root = Tk()
-    root.title('Добавление новой точки')
-    root.geometry('500x200')
+    root.title('Добавление точек')
+    root.geometry('250x'+str(insert_amount*100))
+    dots_x = []
+    dots_y = []
+    x_label = Label(root, text='X', font=('Helvectica', '16'))
+    x_label.place(x=50, y=10)
 
-    insert_label = Label(root, text='Введите координаты через пробел')
-    insert_label.place(x=0, y=30)
+    y_label = Label(root, text='Y', font=('Helvectica', '16'))
+    y_label.place(x=160, y=10)
+    for i in range(insert_amount):
+        dots_x.append(Entry(root))
+        dots_y.append(Entry(root))
+        dots_x[i].place(x=10, y=40*(i+1), width=100)
+        dots_y[i].place(x=120, y=40*(i+1), width=100)
 
-    insert_entry = Entry(root)
-    insert_entry.place(x=0, y=50)
+    insert_button = Button(root, text='Добавить', command=lambda: insert_dot(frame, dots_x, dots_y, insert_amount))
+    insert_button.pack(side=BOTTOM)
 
-    insert_button = Button(root, text='Добавить')
-    insert_button.bind('<Button-1>', lambda event: insert_dot(frame, insert_entry.get()))
-    insert_button.place(x=0, y=80)
     root.mainloop()
 
 
 # удаление точки из dataframe
-def delete_dot(frame, index):
+def delete_dot(frame, ind, delete_amount):
     tmp = frame.loc[frame.index == 3]
-    frame.loc[frame.index == index] = tmp
+    for i in range(delete_amount):
+        frame.loc[frame.index == int(ind[i].get())] = tmp
 
 
-def delete_dot_window(frame):
+def delete_dot_window(frame, delete_amount):
     root = Tk()
     root.title('Удаление точки')
-    root.geometry('500x200')
+    root.geometry('250x'+str(delete_amount*100))
+    ind = []
+    delete_label = Label(root, text='Введите индексы точек')
+    delete_label.place(x=0, y=10)
 
-    delete_label = Label(root, text='Введите индекс точки')
-    delete_label.place(x=0, y=30)
+    for i in range(delete_amount):
+        ind.append(Entry(root))
+        ind[i].place(x=10, y=40*(i+1), width=100)
 
-    delete_entry = Entry(root)
-    delete_entry.place(x=0, y=50)
-
-    delete_button = Button(root, text='Удалить')
-    delete_button.bind('<Button-1>', lambda event: delete_dot(frame, int(delete_entry.get())))
-    delete_button.place(x=0, y=80)
+    delete_button = Button(root, text='Удалить', command=lambda: delete_dot(frame, ind, delete_amount))
+    delete_button.pack(side=BOTTOM)
     root.mainloop()
 
 
 # изменение координато точки
-def change_dot(frame, index_and_coordinates):
-    index, x, y = [int(i) for i in index_and_coordinates.split()]
+def change_dot(frame, index, x, y):
+    x = float(x)
+    y = float(y)
     frame.loc[index, 'x'] = x
     frame.loc[index, 'y'] = y
 
@@ -107,17 +141,33 @@ def change_dot(frame, index_and_coordinates):
 def change_dot_window(frame):
     root = Tk()
     root.title('Изменение координат')
-    root.geometry('500x200')
+    root.geometry('700x300')
 
-    change_label = Label(root, text='Введите номер и новые координаты точки')
-    change_label.place(x=0, y=30)
+    change_label = Label(root, text='Введите номер изменяемой точки и её новые координаты', font=('Helvectica', '16'))
+    change_label.place(x=0, y=10)
 
-    change_entry = Entry(root)
-    change_entry.place(x=0, y=50)
+    index_label = Label(root, text='№ точки')
+    index_label.place(x=0, y=50)
 
-    change_button = Button(root, text='Изменить')
-    change_button.bind('<Button-1>', lambda event: change_dot(frame, change_entry.get()))
-    change_button.place(x=0, y=80)
+    index_entry = Entry(root)
+    index_entry.place(x=0, y=70, width=100)
+
+    x_label = Label(root, text='X')
+    x_label.place(x=140, y=50)
+
+    x_entry = Entry(root)
+    x_entry.place(x=120, y=70, width=100)
+
+    y_label = Label(root, text='Y')
+    y_label.place(x=260, y=50)
+
+    y_entry = Entry(root)
+    y_entry.place(x=240, y=70, width=100)
+
+    change_button = Button(root, text='Изменить', command=lambda: change_dot(frame, int(index_entry.get()),
+                                                                             x_entry.get(),
+                                                                             y_entry.get()))
+    change_button.place(x=0, y=100)
     root.mainloop()
 
 
