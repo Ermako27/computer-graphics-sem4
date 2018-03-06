@@ -4,9 +4,6 @@ from interface_func import show_dots_window, insert_dot_window, delete_dot_windo
 from logic_func import print_all_figures, print_solution
 
 df_text = pd.read_csv('dots.csv', sep=',')
-#print(df_text)
-
-#df_text = pd.DataFrame(columns=['x', 'y'])
 
 root = Tk()
 

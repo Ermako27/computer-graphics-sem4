@@ -52,7 +52,9 @@ def create_triangle(dot1, dot2, dot3, canvas, triger=0):  # построение
 
         canvas.create_line(500 + (dot2[0] * 10), 500 - (dot2[1] * 10), 500 + (dot3[0] * 10), 500 - (dot3[1] * 10),
                            width=2, fill='green', tag='del')
-    elif triger == 1:
+    elif triger == 1:  # отрисовка прямых через точки треугольника
+
+        # если прямая вертикальная или горизонтальная
         if dot1[0] == dot2[0]:
             canvas.create_line(500 + dot1[0]*10, 0, 500 + dot1[0]*10, 1000, width=2, fill='green', tag='del')
         if dot1[0] == dot3[0]:
@@ -67,8 +69,10 @@ def create_triangle(dot1, dot2, dot3, canvas, triger=0):  # построение
         if dot2[1] == dot3[1]:
             canvas.create_line(0, 500 - dot2[1]*10, 1000, 500 - dot2[1]*10, width=2, fill='green', tag='del')
 
+        # иначе
         if (dot1[0] != dot2[0]) & (dot1[1] != dot2[1]):
-            x1 = x_find(dot1, dot2, 50)
+            #  находим координаты иксов конца и начала прямых проходящих через точки треугольника (прямые заканчиваются за границами канваса)
+            x1 = x_find(dot1, dot2, 50)  # 50 - самая большая точка x считая от цента канваса (500,500)
             x2 = x_find(dot1, dot2, -50)
             canvas.create_line(500 + x1 * 10, 0, 500 + x2 * 10, 1000, width=2, fill='green', tag='del')
 
@@ -108,7 +112,7 @@ def print_all_figures(dot1, dot2, dot3, frame, canvas):  # отрисавка в
 
             for elem in comb:  # отрисовка всевозможных окружностей
                 print(elem)
-                if possibility_of_circle(elem[0], elem[1], elem[2]) == 0:
+                if possibility_of_circle(elem[0], elem[1], elem[2]) == 0:  # возможно ли построить окружность по данной комбинации точек
                     print('pass', elem)
                     center = center_coordinates_find(elem[0], elem[1], elem[2])  # находим центр окружности
                     radius = len_of_line(elem[0], center)  # находим радиус
@@ -143,9 +147,9 @@ def print_solution(dot1, dot2, dot3, frame, canvas):  # отрисовка ре�
             comb = dots_combinations(frame.dropna())
 
             for elem in comb:
-                if possibility_of_circle(elem[0], elem[1], elem[2]) == 0:
+                if possibility_of_circle(elem[0], elem[1], elem[2]) == 0:  # возможно ли построить окружность по данной комбинации точек
                     center = center_coordinates_find(elem[0], elem[1], elem[2])  # находим центр
-                    if belonging(dot1, dot2, dot3, center):
+                    if belonging(dot1, dot2, dot3, center):  # проверяем принадлежность прямым треугольника
                         radius = len_of_line(elem[0], center)  # находим радиус
                         circle(center[0], center[1], radius*10, canvas, None, 'red', 'del')
                         circle(center[0], center[1], 3, canvas, 'red', 'red', 'del')
@@ -169,7 +173,7 @@ def print_solution(dot1, dot2, dot3, frame, canvas):  # отрисовка ре�
         error_message('Некорректный ввод')
 
 
-def dots_combinations(frame):
+def dots_combinations(frame):  # все комбинации без повторений по 3 точки из всех точек множества
     x = []
     d = []
     length = len(frame) - 2
@@ -184,7 +188,7 @@ def dots_combinations(frame):
     return x
 
 
-def center_coordinates_find(dot1, dot2, dot3):
+def center_coordinates_find(dot1, dot2, dot3):  # нахождение центра окружности, проходящей через 3 точки
     cx = 0
     cy = 0
     a = dot2[0] - dot1[0]
@@ -200,7 +204,7 @@ def center_coordinates_find(dot1, dot2, dot3):
     return (cx, cy)
 
 
-def belonging(dot1, dot2, dot3, aim):
+def belonging(dot1, dot2, dot3, aim):  # принадлежность(центра окружности) точки хотя бы одной из сторон треугольника
 
     if (dot1[0] == dot2[0] == aim[0]) or (dot1[0] == dot3[0] == aim[0]) or (dot2[0] == dot3[0] == aim[0]):
         return 1
@@ -219,8 +223,8 @@ def belonging(dot1, dot2, dot3, aim):
     return 0
 
 
-def possibility_of_circle(dot1, dot2, dot3):
-    if (dot1[0] == dot2[0] == dot3[0]) or (dot1[1] == dot2[1] == dot3[1]):
+def possibility_of_circle(dot1, dot2, dot3): # проверка принадлеэнлсти точки прямой
+    if (dot1[0] == dot2[0] == dot3[0]) or (dot1[1] == dot2[1] == dot3[1]):  # ф-ция для определения можно ли через 3 точки постоить окружность
         return -1
     if ((dot3[1] - dot1[1])/(dot2[1] - dot1[1])) == ((dot3[0] - dot1[0])/(dot2[0] - dot1[0])):
         return -1
