@@ -89,7 +89,7 @@ bunch_button.bind('<Button-1>', lambda event: print_all_figures(' '.join([v1_x_e
 bunch_button.place(x=10, y=350)
 
 # построение искомых окружностей
-solution_button = Button(root, text='Построить искомые окружности')
+solution_button = Button(root, text='Построить решение')
 solution_button.bind('<Button-1>', lambda event: print_solution(' '.join([v1_x_entry.get(), v1_y_entry.get()]),
                                                                 ' '.join([v2_x_entry.get(), v2_y_entry.get()]),
                                                                 ' '.join([v3_x_entry.get(), v3_y_entry.get()]),

@@ -144,7 +144,7 @@ def print_solution(dot1, dot2, dot3, frame, canvas):  # отрисовка ре�
             dot1 = [float(i) for i in dot1.split()]
             dot2 = [float(i) for i in dot2.split()]
             dot3 = [float(i) for i in dot3.split()]
-            comb = dots_combinations(frame.dropna())
+            comb = dots_combinations(frame.dropna())  # находим комбинации точек
 
             for elem in comb:
                 if possibility_of_circle(elem[0], elem[1], elem[2]) == 0:  # возможно ли построить окружность по данной комбинации точек
@@ -161,7 +161,7 @@ def print_solution(dot1, dot2, dot3, frame, canvas):  # отрисовка ре�
 
             coordinates = tb_create(df)
             root = Tk()
-            root.title('Таблица ответов')
+            root.title('Таблица ответов: координаты центра и радиус')
             root.geometry('1000x400')
             tb = Table(root, ('№', 'X', 'Y', 'RADIUS'), coordinates)
             tb.pack(expand=YES, fill=BOTH)
