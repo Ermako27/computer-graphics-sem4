@@ -56,8 +56,8 @@ class Picture(QGraphicsItem):
         return QRectF(10, 10, 1000, 1000)
 
     def moveFunc(self, place):
-        dx = place.moveX.value()
-        dy = place.moveY.value()
+        dx = float(place.moveX.text())  # получаем значения с полей ввода
+        dy = float(place.moveY.text())
 
         self.bottomX = [elem + dx for elem in self.bottomX]
         self.bottomY = [elem + dy for elem in self.bottomY]
@@ -78,10 +78,42 @@ class Picture(QGraphicsItem):
         self.pTopright[0], self.pTopright[1] = self.pTopright[0] + dx, self.pTopright[1] + dy
         self.pBotleft[0], self.pBotleft[1] = self.pBotleft[0] + dx, self.pBotleft[1] + dy
         self.pBotright[0], self.pBotright[1] = self.pBotright[0] + dx, self.pBotright[1] + dy
+
+        self.update()
+
+    def scaleFunc(self, place):
+        xm = float(place.scaleCentreX.text())  # центр масштабирования
+        ym = float(place.scaleCentreY.text())
+
+        kx = float(place.scaleX.text())  # коэффициенты масстабирования
+        ky = float(place.scaleY.text())
+
+        # масштабирование дуг
+        self.bottomX = [kx * elem + (1 - kx) * xm for elem in self.bottomX]
+        self.bottomY = [ky * elem + (1 - ky) * ym for elem in self.bottomY]
+
+        self.leftX = [kx * elem + (1 - kx) * xm for elem in self.leftX]
+        self.leftY = [ky * elem + (1 - ky) * ym for elem in self.leftY]
+
+        self.rightX = [kx * elem + (1 - kx) * xm for elem in self.rightX]
+        self.rightY = [ky * elem + (1 - ky) * ym for elem in self.rightY]
+
+        # маштабирование линий
+        self.leftLine[0], self.leftLine[1] = kx * self.leftLine[0] + (1 - kx) * xm, ky * self.leftLine[1] + (1 - ky) * ym
+        self.leftLine[2], self.leftLine[3] = kx * self.leftLine[2] + (1 - kx) * xm, ky * self.leftLine[3] + (1 - ky) * ym
+
+        self.rightLine[0], self.rightLine[1] = kx * self.rightLine[0] + (1 - kx) * xm, ky * self.rightLine[1] + (1 - ky) * ym
+        self.rightLine[2], self.rightLine[3] = kx * self.rightLine[2] + (1 - kx) * xm, ky * self.rightLine[3] + (1 - ky) * ym
+
+        # масштабирование прямоугольника
+        self.pTopleft[0], self.pTopleft[1] = kx * self.pTopleft[0] + (1 - kx) * xm, ky * self.pTopleft[1] + (1 - ky) * ym
+        self.pTopright[0], self.pTopright[1] = kx * self.pTopright[0] + (1 - kx) * xm, ky * self.pTopright[1] + (1 - ky) * ym
+        self.pBotleft[0], self.pBotleft[1] = kx * self.pBotleft[0] + (1 - kx) * xm, ky * self.pBotleft[1] + (1 - ky) * ym
+        self.pBotright[0], self.pBotright[1] = kx * self.pBotright[0] + (1 - kx) * xm, ky * self.pBotright[1] + (1 - ky) * ym
+
         self.update()
 
 
-    def scaleFunc(self, place):
 
 
 
@@ -94,12 +126,12 @@ class Wind(QGraphicsView):
         self.place = uic.loadUi('window.ui')  # атрибут окна
         self.object = Picture()  # артибут картинки
         scene = QGraphicsScene(self)
-        scene.setSceneRect(10, 10, 1000, 1000)
+        scene.setSceneRect(10, 10, 2000, 2000)
         scene.addItem(self.object)
         self.place.image.setScene(scene)
         self.place.move.clicked.connect(lambda: self.object.moveFunc(self.place))
-        self.place.move.clicked.connect(lambda: self.object.scaleFunc(self.place))
-        self.place.move.clicked.connect(lambda: self.object.rotateFunc(self.place))
+        self.place.scale.clicked.connect(lambda: self.object.scaleFunc(self.place))
+        self.place.rotate.clicked.connect(lambda: self.object.rotateFunc(self.place))
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
