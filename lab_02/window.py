@@ -135,8 +135,8 @@ class Picture(QGraphicsItem):
         self.prev_pBotright = self.pBotright[:]
         self.prev_pBotleft = self.pBotleft[:]
 
-        xm = float(place.scaleCentreX.text())  # центр масштабирования
-        ym = float(place.scaleCentreY.text())
+        xm = float(place.scaleCentreX.text()) + 520 # центр масштабирования
+        ym = float(place.scaleCentreY.text()) + 580
 
         kx = float(place.scaleX.text())  # коэффициенты масстабирования
         ky = float(place.scaleY.text())
@@ -184,8 +184,8 @@ class Picture(QGraphicsItem):
         self.prev_pBotright = self.pBotright[:]
         self.prev_pBotleft = self.pBotleft[:]
 
-        xc = float(place.rotateCentreX.text())  # центр поворота
-        yc = float(place.rotateCentreY.text())
+        xc = float(place.rotateCentreX.text()) + 520  # центр поворота
+        yc = float(place.rotateCentreY.text()) + 580
 
         ang = int(place.angle.text())  # угол поворота
         l = len(self.bottomX)
